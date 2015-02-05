@@ -1,0 +1,109 @@
+
+
+/*
+==============================================
+header, footer and general
+==============================================
+*/
+
+body{
+	padding-bottom: 150px;
+}
+h1, h2, p, li{
+	font-family: 'Dosis', 'Droid Serif';
+}
+li span{
+	font-size: 1em;
+}
+
+/*
+==============================================
+Weather application
+==============================================
+*/
+.container{
+	padding-top: 100px;
+}
+
+#displayWeather h2{
+	color: steelblue;
+}
+.Weather{
+	margin-bottom: 150px;
+}
+#displayWeather h2:first-letter {
+    text-transform: uppercase;
+}
+.city{
+	width: 250px;
+}
+#displayWeather img{
+	width: 250px;
+	border-radius: 5px;
+	margin: 10px 0;
+	box-shadow: .5px .5px 10px 1px grey;
+	
+}
+#displayWeather ul{
+	list-style: none;
+	
+}
+#displayWeather ul li{
+	font-size: 1.8em;
+	margin: 5px 0;
+
+}
+#displayWeather ul li:nth-child(2){
+	margin-right:12px;
+}
+#displayWeather li span{
+	color: steelblue;
+}
+
+.weatherAlert{
+	font-size: 2em;
+	margin-top: 50px;
+	color: darkred;
+}
+
+
+@media screen and (min-width: 767px) {
+
+	#displayWeather ul{
+	margin-left: -530px;
+	margin-top: -150px;
+	position: relative;
+	z-index: -1;
+	}
+	.slideLeftWeather{
+	animation-name: slideLeftWeather;
+	-webkit-animation-name: slideLeftWeather;	
+
+	animation-duration: 1s;	
+	-webkit-animation-duration: 1s;
+
+	animation-timing-function: ease-in-out;	
+	-webkit-animation-timing-function: ease-in-out;		
+
+	visibility: visible !important;	
+}
+
+@keyframes slideLeftWeather {
+	0% {
+		transform: translateX(23%);
+	}			
+	100% {
+		transform: translateX(0%);
+	}
+}
+
+@-webkit-keyframes slideLeftWeather {
+	0% {
+		-webkit-transform: translateX(23%);
+	}			
+	100% {
+		-webkit-transform: translateX(0%);
+	}
+}
+
+}
