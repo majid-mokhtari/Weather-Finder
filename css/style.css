@@ -24,9 +24,12 @@ Weather application
 .container{
 	padding-top: 100px;
 }
-
+.weatherGuid{
+	margin-top: 50px;
+}
 #displayWeather h2{
 	color: steelblue;
+	
 }
 .Weather{
 	margin-bottom: 150px;
@@ -37,8 +40,11 @@ Weather application
 .city{
 	width: 250px;
 }
+#weatherApp button{
+	margin-top: 10px;
+}
 #displayWeather img{
-	width: 250px;
+	width: 260px;
 	border-radius: 5px;
 	margin: 10px 0;
 	box-shadow: .5px .5px 10px 1px grey;
@@ -46,12 +52,12 @@ Weather application
 }
 #displayWeather ul{
 	list-style: none;
+	margin-right: 20px;
 	
 }
 #displayWeather ul li{
 	font-size: 1.8em;
 	margin: 5px 0;
-
 }
 #displayWeather ul li:nth-child(2){
 	margin-right:12px;
@@ -68,10 +74,19 @@ Weather application
 
 
 @media screen and (min-width: 767px) {
+	.flickerGallery{
+	margin-top: 55px;
 
+}
+	#displayWeather img{
+		width: 320px;
+	}
+	#displayWeather{
+		margin-top: -45px;
+	}
 	#displayWeather ul{
-	margin-left: -530px;
-	margin-top: -150px;
+	margin-left: -610px;
+	margin-top: -180px;
 	position: relative;
 	z-index: -1;
 	}

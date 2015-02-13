@@ -1,10 +1,11 @@
+
+
 /*
 ==============================================
 Weather Application
 ==============================================
 */
-//waiting for html to load first
-(function(){
+
 
 //creating object of pictures realted to different description
 var cloudPictures = {
@@ -17,86 +18,108 @@ var cloudPictures = {
 	"light rain": 'img/lightRain.jpg'
 }
 
-$('#weatherApp form').on('submit', function(event){
-	event.preventDefault();
 
-	//after cklicking inside any input, clears the text on the page
-	$('input').focus(function(){
-				$('#displayWeather').text('');
-			});
+////////////////////AJAX CALL FOR FLICKER///////////////////////////////
 
-	var formUrl = $(this).attr('action');
-	var formData = $(this).serializeArray();
-	var jsonData = {};
+var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
 
-	// creating new object similar to json data format
-	$.each(formData, function(){
-		if(jsonData[this.name]){
-			//if it doesn't push 
-			if(!jsonData[this.name].push){
-				jsonData[this.name] = [jsonData[this.name]];
-			}
-			jsonData[this.name].push(this.value || '');
-		} else {
-			jsonData[this.name] = this.value || '';	
-		}
-	});
+function flicker(input){
+    var promise = $.Deferred();
+     $.ajax({
+        url: flickerAPI,
+        data: {
+            tags: input,
+            format: "json"
+        },
+        dataType: 'json',
+        success: function(response){
+            promise.resolve(response.items)
+        }  
+    })
+    return promise;
+}
 
-	
-	//using api key from the openweathermap.org with ajax request
+////////////////////AJAX CALL FOR WEATHER///////////////////////////////
+
+var weatherApi = 'http://api.openweathermap.org/data/2.5/weather';
+function findWeather(input){
+	var promise = $.Deferred();
 	$.ajax({
-		context: $('#weatherApp form'),
-		url: 'http://api.openweathermap.org/data/2.5/weather',
+		url: weatherApi,
 		data: {
-			q: jsonData.city,
+			q: input,
 			units: "metric"
 		},
-		//contentType: 'appication/json'   asking the server to respond with json
-		// type: 'POST',
 		dataType: "json",
 		timeout: 3000,
 		beforeSend: function(){
 			$('#displayWeather').html('<h1>Loading . . .</h1>');
 		},
 		success: function(response){
-
-			//creating variables using object received from weather website
-			var temperature = parseInt(response.main.temp);
-			var city = response.name;
-			var country = response.sys.country;
-			var humidity = response.main.humidity;
-			var description = response.weather[0].description;
-			var wind = response.wind.speed;
-			
-			//building list of information about the weather of the city entered
-			$('#displayWeather').html('<h1 >' + city + '</h1>');
-			$('#displayWeather').append('<h2><span class="glyphicon glyphicon-cloud"></span> ' + description + '</h2>');
-			$('#displayWeather').append('<img src="' + cloudPictures[description] + '">');
-
-			var lists = $('<ul></ul>');
-			lists.append('<li><span class="glyphicon glyphicon-dashboard"></span> Temperature:<span ><b> ' + temperature + 'C</b></span></li>');
-			lists.append('<li><span class="glyphicon glyphicon-tint"></span> Humidity:<span><b> ' + humidity +'%</b></span></li>');
-			lists.append('<li><span class="glyphicon glyphicon-flash"></span> Wind:<span><b> ' + wind + ' km/h</b></span></li>');
-			lists.addClass('slideLeftWeather');
-			$('#displayWeather').append(lists);
-		
-		},
-		error: function(request, errorType, errorMessage){
-			alert('Error: ' + errorType + ' with message: ' + errorMessage );
+			promise.resolve(response)
 		}
+	});
+	return promise;
+}
 
-	});	
+$('#weatherApp').on('click', 'button', function(event){
+	event.preventDefault();
+
+	var value = $('.city').val();
 	
-	//if user leave inputs empty
-		if($('.city').val() == '' ){
+		//if user leave inputs empty
+		if(value == '' ){
 			$('#displayWeather').html('<p class="weatherAlert text-center">Enter the name of city so I can find the weather</p>');
+			return false
 		}
+
+	$.when(
+		findWeather(value),
+		flicker(value)
+		).then(function(weatherData, flikcerData){
+
+		
+	///////////////WEATHER CALLBACK//////////////////
+	//creating variables using object received from weather website
+	var temperature = parseInt(weatherData.main.temp);
+	var city = weatherData.name;
+	var country = weatherData.sys.country;
+	var humidity = weatherData.main.humidity;
+	var description = weatherData.weather[0].description;
+	var wind = weatherData.wind.speed;
+	
+	//building list of information about the weather of the city entered
+	$('#displayWeather').html('<h1 >' + city + '</h1>');
+	$('#displayWeather').append('<h2><span class="glyphicon glyphicon-cloud"></span> ' + description + '</h2>');
+	$('#displayWeather').append('<img src="' + cloudPictures[description] + '">');
+
+	var lists = $('<ul></ul>');
+	lists.append('<li><span class="glyphicon glyphicon-dashboard"></span> Temperature:<span ><b> ' + temperature + 'C</b></span></li>');
+	lists.append('<li><span class="glyphicon glyphicon-tint"></span> Humidity:<span><b> ' + humidity +'%</b></span></li>');
+	lists.append('<li><span class="glyphicon glyphicon-flash"></span> Wind:<span><b> ' + wind + ' km/h</b></span></li>');
+	lists.addClass('slideLeftWeather');
+	$('#displayWeather').append(lists);
+	
+		
+
+	///////////////FLICKER CALLBACK//////////////////
+    	var gallery = $('<div class="flickerGallery "></div>')
+        $.each(flikcerData, function(i, item){
+            var img = $( "<img>" ).attr( "src", item.media.m );
+          	gallery.append(img);
+        if ( i === 1) {
+          return false;
+        }
+        });
+        $('#displayWeather').append(gallery);
+        $('.flickerGallery img').css({'width': '150px', 'height': '150px', 'margin-left': '10px'})
+        
+      
+   
+	})
 
 });
 
-
-//function ready ends here
-})();
 
 
 
